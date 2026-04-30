@@ -1,6 +1,17 @@
 import csv
+import random
+import numpy as np
 
-from src.config import TRUCK_SPEED, DRONE_SPEED, BATTERY_CAPACITY
+from src.config import (
+    TRUCK_SPEED,
+    DRONE_SPEED,
+    BATTERY_CAPACITY,
+    MAX_ITERATIONS,
+    INITIAL_TEMPERATURE,
+    COOLING_RATE,
+    KEEP_EVERY,
+    RANDOM_SEED,
+)
 from src.data_loader import load_nodes
 from src.distance_matrix import compute_distance_matrix, compute_time_matrix
 from src.hybrid_solver import solve_two_stage_hybrid
@@ -9,9 +20,6 @@ from src.visualization import plot_solution, plot_history
 
 
 def save_results_csv(result, output_path="results/results.csv"):
-    """
-    Saves final summary result to CSV.
-    """
     best_solution = result["best_solution"]
 
     with open(output_path, mode="w", newline="") as file:
@@ -36,7 +44,10 @@ def save_results_csv(result, output_path="results/results.csv"):
         ])
 
 
-def main():
+def run_single_demo():
+    random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
+
     nodes_df = load_nodes("data/nodes.csv")
 
     distance_matrix = compute_distance_matrix(nodes_df)
@@ -54,10 +65,10 @@ def main():
         start_node=start_node,
         end_node=end_node,
         battery_capacity=BATTERY_CAPACITY,
-        max_iterations=300,
-        initial_temperature=10.0,
-        cooling_rate=0.995,
-        keep_every=2
+        max_iterations=MAX_ITERATIONS,
+        initial_temperature=INITIAL_TEMPERATURE,
+        cooling_rate=COOLING_RATE,
+        keep_every=KEEP_EVERY
     )
 
     best_solution = result["best_solution"]
@@ -78,4 +89,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_single_demo()

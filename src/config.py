@@ -1,9 +1,11 @@
 TRUCK_SPEED = 40
 DRONE_SPEED = 80
 
-# Drone battery capacity expressed in time units.
-# This value can be changed later according to the final dataset.
 BATTERY_CAPACITY = 2.5
 
-START_NODE_TYPE = "origin"
-END_NODE_TYPE = "destination"
+MAX_ITERATIONS = 300
+INITIAL_TEMPERATURE = 10.0
+COOLING_RATE = 0.995
+KEEP_EVERY = 2
+
+RANDOM_SEED = 42
