@@ -1,0 +1,12 @@
+node_id,x,y,type
+0,10,10,origin
+1,25,72,customer
+2,48,80,customer
+3,60,55,customer
+4,72,30,customer
+5,90,20,customer
+6,35,40,customer
+7,55,75,customer
+8,20,30,customer
+9,75,65,customer
+10,45,10,destination
