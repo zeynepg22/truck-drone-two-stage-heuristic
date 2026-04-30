@@ -1,0 +1,2 @@
+method,makespan,feasible,runtime_seconds,truck_route,drone_assignments
+Two-Stage Hybrid Heuristic,5.2754,True,0.0072,"[0, 8, 6, 2, 9, 5, 10]","{(0, 8): [], (8, 6): [], (6, 2): [3, 1], (2, 9): [7], (9, 5): [], (5, 10): [4]}"
