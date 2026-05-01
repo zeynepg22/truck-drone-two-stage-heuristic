@@ -2,6 +2,7 @@ import math
 import random
 import time
 
+from src.local_search import or_opt_drone_subroutes
 from src.initial_solution import create_initial_truck_route
 from src.drone_scheduler import create_drone_schedule
 from src.models import Solution
@@ -62,11 +63,19 @@ def solve_two_stage_hybrid(
     )
 
     truck_route, drone_assignments = create_drone_schedule(
+       
         truck_route,
         all_nodes,
         drone_time,
         battery_capacity
     )
+    
+    drone_assignments = or_opt_drone_subroutes(
+        drone_assignments,
+        drone_time,
+        battery_capacity
+    )
+   
 
     current_solution = Solution(
         truck_route=truck_route,
