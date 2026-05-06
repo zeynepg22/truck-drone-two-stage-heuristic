@@ -6,16 +6,10 @@ from src.initial_solution import create_initial_truck_route
 from src.drone_scheduler import create_drone_schedule
 from src.models import Solution
 from src.evaluator import evaluate_solution
-from src.local_search import improve_solution_once
+from src.local_search import improve_solution_once, or_opt_drone_subroutes
 
 
 def accept_solution(current_solution, candidate_solution, temperature):
-    """
-    Simulated Annealing acceptance rule.
-
-    Better solutions are always accepted.
-    Worse solutions may be accepted with a probability.
-    """
     if candidate_solution.makespan < current_solution.makespan:
         return True
 
@@ -40,18 +34,6 @@ def solve_two_stage_hybrid(
     cooling_rate=0.995,
     keep_every=2
 ):
-    """
-    Full Two-Stage Hybrid Solver.
-
-    Stage 1:
-        Build initial truck route using nearest neighbor + 2-opt.
-
-    Stage 2:
-        Assign drone-only customers to truck edges and repair battery violations.
-
-    Improvement:
-        Apply local search moves and SA acceptance.
-    """
     start_time = time.time()
 
     truck_route, full_truck_route = create_initial_truck_route(
@@ -64,6 +46,12 @@ def solve_two_stage_hybrid(
     truck_route, drone_assignments = create_drone_schedule(
         truck_route,
         all_nodes,
+        drone_time,
+        battery_capacity
+    )
+
+    drone_assignments = or_opt_drone_subroutes(
+        drone_assignments,
         drone_time,
         battery_capacity
     )
@@ -82,8 +70,8 @@ def solve_two_stage_hybrid(
 
     best_solution = current_solution
     temperature = initial_temperature
-
     history = []
+    no_improvement_count = 0
 
     for iteration in range(max_iterations):
         candidate_solution = improve_solution_once(
@@ -102,6 +90,9 @@ def solve_two_stage_hybrid(
             and current_solution.makespan < best_solution.makespan
         ):
             best_solution = current_solution
+            no_improvement_count = 0
+        else:
+            no_improvement_count += 1
 
         history.append({
             "iteration": iteration,
@@ -110,7 +101,12 @@ def solve_two_stage_hybrid(
             "temperature": temperature
         })
 
-        temperature *= cooling_rate
+        if no_improvement_count > 50:
+            adaptive_cooling_rate = min(cooling_rate + 0.002, 0.9995)
+        else:
+            adaptive_cooling_rate = cooling_rate
+
+        temperature *= adaptive_cooling_rate
 
     runtime = time.time() - start_time
 
